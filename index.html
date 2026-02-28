@@ -24,7 +24,7 @@
             height: 100vh;
         }
 
-        /* Pantalla de Inicio */
+        /* Interfaz de Inicio */
         #pantalla-inicio {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -39,17 +39,6 @@
             box-sizing: border-box;
         }
 
-        #pantalla-inicio h1 {
-            color: var(--fucsia);
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        #pantalla-inicio p {
-            color: #666;
-            margin-bottom: 30px;
-        }
-
         .btn-empezar {
             background-color: var(--rosa-fuerte);
             color: white;
@@ -60,12 +49,18 @@
             cursor: pointer;
             font-weight: bold;
             box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3);
-            transition: transform 0.2s;
+            margin-top: 20px;
         }
 
-        .btn-empezar:active { transform: scale(0.95); }
+        /* Canvas Configurado para nitidez */
+        canvas {
+            display: none;
+            background: white;
+            /* Estas líneas ayudan a que las fotos no se vean borrosas */
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+        }
 
-        /* UI del Juego */
         #ui {
             position: absolute;
             top: 20px;
@@ -73,17 +68,10 @@
             color: var(--fucsia);
             font-weight: bold;
             z-index: 10;
-            pointer-events: none;
-            display: none; /* Se muestra al empezar */
+            display: none;
         }
 
-        canvas {
-            display: none; /* Se muestra al empezar */
-            background: white;
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
-        }
-
-        /* Pantalla de Regalo */
+        /* Final con Regalo */
         #regalo-pantalla {
             display: none;
             position: fixed;
@@ -100,7 +88,6 @@
             width: 80%;
             max-width: 300px;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
 
         .btn-download {
@@ -117,9 +104,9 @@
 <body>
 
     <div id="pantalla-inicio">
-        <div style="font-size: 60px; margin-bottom: 10px;">🎮</div>
-        <h1>¿Lista para jugar?</h1>
-        <p>Atrapa 10 fotos mías para desbloquear tu regalo especial. <br>¡Cuidado, que tengo hambre!</p>
+        <div style="font-size: 60px;">🎮</div>
+        <h1 style="color: var(--fucsia);">¿Lista, mi amor?</h1>
+        <p>Atrapa 10 fotos mías para tu regalo.</p>
         <button class="btn-empezar" onclick="iniciarJuego()">EMPEZAR JUEGO</button>
     </div>
 
@@ -128,51 +115,38 @@
 
     <div id="regalo-pantalla">
         <h1 style="color: var(--fucsia);">¡Lo lograste! ❤️</h1>
-        <p>Aquí tienes tu regalo especial:</p>
-        <img src="./tu-foto-regalo.jpeg" id="foto-regalo" alt="Regalo">
+        <img src="./tu-foto-regalo.jpeg" alt="Regalo">
         <br>
-        <a href="./tu-foto-regalo.jpeg" download="RegaloEspecial.jpeg" class="btn-download">Descargar mi Regalo 🎁</a>
+        <a href="./tu-foto-regalo.jpeg" download="Regalo.jpeg" class="btn-download">Descargar Regalo 🎁</a>
     </div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const scoreElement = document.getElementById('score');
-        const regaloPantalla = document.getElementById('regalo-pantalla');
-        const pantallaInicio = document.getElementById('pantalla-inicio');
-        const ui = document.getElementById('ui');
-
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        
+        // --- AJUSTE HD (RETINA DISPLAY) ---
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = window.innerWidth * dpr;
+        canvas.height = window.innerHeight * dpr;
+        canvas.style.width = window.innerWidth + 'px';
+        canvas.style.height = window.innerHeight + 'px';
+        ctx.scale(dpr, dpr);
 
         let score = 0;
         let gameActive = false;
 
-        // --- IMÁGENES CON RUTA RELATIVA SEGURA ---
-        const imgEllaCerrada = new Image();
-        imgEllaCerrada.src = './foto-ella-cerrada.png'; 
-
-        const imgEllaAbierta = new Image();
-        imgEllaAbierta.src = './foto-ella-abierta.png'; 
-
-        const imgYo = new Image();
-        imgYo.src = './foto-tuya.png'; 
+        const imgEllaCerrada = new Image(); imgEllaCerrada.src = './foto-ella-cerrada.png';
+        const imgEllaAbierta = new Image(); imgEllaAbierta.src = './foto-ella-abierta.png';
+        const imgYo = new Image(); imgYo.src = './foto-tuya.png';
 
         let imgEllaActual = imgEllaCerrada;
-
-        const player = {
-            x: canvas.width / 2 - 45,
-            y: canvas.height - 130,
-            w: 90,
-            h: 90
-        };
-
+        const player = { x: window.innerWidth / 2 - 45, y: window.innerHeight - 130, w: 90, h: 90 };
         let items = [];
 
         function iniciarJuego() {
-            pantallaInicio.style.display = 'none';
+            document.getElementById('pantalla-inicio').style.display = 'none';
             canvas.style.display = 'block';
-            ui.style.display = 'block';
+            document.getElementById('ui').style.display = 'block';
             gameActive = true;
             spawnItem();
             draw();
@@ -180,56 +154,45 @@
 
         function spawnItem() {
             if (!gameActive) return;
-            items.push({
-                x: Math.random() * (canvas.width - 60),
-                y: -60,
-                w: 60,
-                h: 60,
-                speed: 4 + Math.random() * 2
-            });
+            items.push({ x: Math.random() * (window.innerWidth - 60), y: -60, w: 60, h: 60, speed: 4 + Math.random() * 2 });
             setTimeout(spawnItem, 900);
         }
 
-        canvas.addEventListener('touchmove', (e) => {
+        window.addEventListener('touchmove', (e) => {
             if(!gameActive) return;
-            const touch = e.touches[0];
-            player.x = touch.clientX - player.w / 2;
-            if (player.x < 0) player.x = 0;
-            if (player.x > canvas.width - player.w) player.x = canvas.width - player.w;
+            player.x = e.touches[0].clientX - player.w / 2;
         });
 
         function update() {
-            if (!gameActive) return;
             items.forEach((item, index) => {
                 item.y += item.speed;
                 if (item.x < player.x + player.w && item.x + item.w > player.x && item.y < player.y + player.h && item.y + item.h > player.y) {
                     imgEllaActual = imgEllaAbierta;
-                    setTimeout(() => { imgEllaActual = imgEllaCerrada; }, 250);
+                    setTimeout(() => { imgEllaActual = imgEllaCerrada; }, 200);
                     items.splice(index, 1);
                     score++;
-                    scoreElement.innerText = score;
+                    document.getElementById('score').innerText = score;
                     if (score >= 10) winGame();
                 }
-                if (item.y > canvas.height) items.splice(index, 1);
+                if (item.y > window.innerHeight) items.splice(index, 1);
             });
         }
 
         function draw() {
             if (!gameActive) return;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
             ctx.drawImage(imgEllaActual, player.x, player.y, player.w, player.h);
-            items.forEach(item => {
-                ctx.drawImage(imgYo, item.x, item.y, item.w, item.h);
-            });
+            items.forEach(item => ctx.drawImage(imgYo, item.x, item.y, item.w, item.h));
             requestAnimationFrame(() => { update(); draw(); });
         }
 
         function winGame() {
             gameActive = false;
             canvas.style.display = 'none';
-            ui.style.display = 'none';
-            regaloPantalla.style.display = 'flex';
+            document.getElementById('ui').style.display = 'none';
+            document.getElementById('regalo-pantalla').style.display = 'flex';
         }
     </script>
 </body>
 </html>
+
