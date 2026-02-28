@@ -3,19 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Atrapa mi amor ❤️</title>
+    <title>Ositos Cariñositos: Atrapa el Amor ❤️</title>
     <style>
         :root {
-            --rosa-fondo: #ffeff2;
-            --rosa-fuerte: #ff3366;
-            --fucsia: #d81b60;
+            --celeste-osito: #a2d2ff;
+            --rosa-osito: #ffafcc;
+            --amarillo-osito: #ffef96;
+            --fucsia: #fb6f92;
         }
 
         body {
             margin: 0;
             padding: 0;
-            background-color: var(--rosa-fondo);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--celeste-osito);
+            background-image: radial-gradient(white 10%, transparent 10%), radial-gradient(white 10%, transparent 10%);
+            background-size: 50px 50px;
+            background-position: 0 0, 25px 25px;
+            font-family: 'Comic Sans MS', 'Segoe UI', cursive, sans-serif;
             overflow: hidden;
             touch-action: none;
             display: flex;
@@ -24,11 +28,11 @@
             height: 100vh;
         }
 
-        /* Interfaz de Inicio */
+        /* Pantalla de Inicio Estilo Ositos */
         #pantalla-inicio {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: white;
+            background: linear-gradient(180deg, #a2d2ff 0%, #ffafcc 100%);
             z-index: 200;
             display: flex;
             flex-direction: column;
@@ -36,117 +40,159 @@
             align-items: center;
             text-align: center;
             padding: 20px;
-            box-sizing: border-box;
         }
 
+        .menu-card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 40px;
+            border: 5px solid white;
+            box-shadow: 0 10px 0px rgba(0,0,0,0.05);
+            max-width: 300px;
+        }
+
+        h1 { color: var(--fucsia); font-size: 1.8rem; margin: 10px 0; text-shadow: 2px 2px white; }
+
         .btn-empezar {
-            background-color: var(--rosa-fuerte);
+            background-color: var(--fucsia);
             color: white;
-            padding: 18px 50px;
-            font-size: 1.2rem;
+            padding: 15px 40px;
+            font-size: 1.3rem;
             border: none;
             border-radius: 50px;
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3);
-            margin-top: 20px;
+            box-shadow: 0 6px 0px #c94b68;
+            transition: all 0.2s;
+            margin-top: 15px;
         }
 
-        /* Canvas Configurado para nitidez */
-        canvas {
-            display: none;
-            background: white;
-            /* Estas líneas ayudan a que las fotos no se vean borrosas */
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-        }
+        .btn-empezar:active { transform: translateY(4px); box-shadow: 0 2px 0px #c94b68; }
 
-        #ui {
+        /* UI durante el juego */
+        #ui-superior {
             position: absolute;
             top: 20px;
-            font-size: 22px;
-            color: var(--fucsia);
-            font-weight: bold;
-            z-index: 10;
+            width: 90%;
             display: none;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
         }
 
-        /* Final con Regalo */
-        #regalo-pantalla {
+        .stat-box {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 3px solid var(--rosa-osito);
+            font-weight: bold;
+            color: var(--fucsia);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vidas-container { display: flex; gap: 5px; }
+        .vida-icon { width: 25px; height: 25px; object-fit: contain; }
+
+        canvas { display: none; image-rendering: -webkit-optimize-contrast; }
+
+        /* Pantallas Finales */
+        .modal-final {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.98);
-            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 300;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
         }
 
-        #regalo-pantalla img {
-            width: 80%;
-            max-width: 300px;
-            border-radius: 20px;
-        }
-
-        .btn-download {
-            margin-top: 20px;
-            padding: 15px 30px;
-            background: #25d366;
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-        }
+        .img-regalo { width: 80%; max-width: 280px; border-radius: 30px; border: 8px solid var(--rosa-osito); }
     </style>
 </head>
 <body>
 
     <div id="pantalla-inicio">
-        <div style="font-size: 60px;">🎮</div>
-        <h1 style="color: var(--fucsia);">¿Lista, mi amor?</h1>
-        <p>Atrapa 10 fotos mías para tu regalo.</p>
-        <button class="btn-empezar" onclick="iniciarJuego()">EMPEZAR JUEGO</button>
+        <div class="menu-card">
+            <div style="font-size: 50px;">☁️🌈✨</div>
+            <h1>Aventura Cariñosita</h1>
+            <p style="color: #888;">¡Atrapa 20 mios para ganar! No dejes que caigan al suelo.</p>
+            <button class="btn-empezar" onclick="iniciarJuego()">¡JUGAR!</button>
+        </div>
     </div>
 
-    <div id="ui">Atrapados: <span id="score">0</span> / 10</div>
+    <div id="ui-superior">
+        <div class="stat-box">✨ <span id="score">0</span> / 20</div>
+        <div class="stat-box">
+            <div id="vidas-display" class="vidas-container">
+                </div>
+        </div>
+    </div>
+
     <canvas id="gameCanvas"></canvas>
 
-    <div id="regalo-pantalla">
-        <h1 style="color: var(--fucsia);">¡Lo lograste! ❤️</h1>
-        <img src="./tu-foto-regalo.jpeg" alt="Regalo">
-        <br>
-        <a href="./tu-foto-regalo.jpeg" download="Regalo.jpeg" class="btn-download">Descargar Regalo 🎁</a>
+    <div id="ganaste-pantalla" class="modal-final">
+        <h1 style="font-size: 2.5rem;">¡Felicidades! 💖</h1>
+        <img src="./tu-foto-regalo.jpeg" class="img-regalo">
+        <p>Eres la mejor atrapando mi amor.</p>
+        <a href="./tu-foto-regalo.jpeg" download class="btn-empezar" style="text-decoration: none;">DESCARGAR REGALO 🎁</a>
+    </div>
+
+    <div id="perdiste-pantalla" class="modal-final">
+        <h1>¡Oh no! ☁️</h1>
+        <p>Te quedaste sin vidas...</p>
+        <button class="btn-empezar" onclick="location.reload()">REINTENTAR 🔄</button>
     </div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        
-        // --- AJUSTE HD (RETINA DISPLAY) ---
         const dpr = window.devicePixelRatio || 1;
-        canvas.width = window.innerWidth * dpr;
-        canvas.height = window.innerHeight * dpr;
-        canvas.style.width = window.innerWidth + 'px';
-        canvas.style.height = window.innerHeight + 'px';
-        ctx.scale(dpr, dpr);
 
         let score = 0;
+        let lives = 3;
         let gameActive = false;
 
+        // Imágenes
         const imgEllaCerrada = new Image(); imgEllaCerrada.src = './foto-ella-cerrada.png';
         const imgEllaAbierta = new Image(); imgEllaAbierta.src = './foto-ella-abierta.png';
         const imgYo = new Image(); imgYo.src = './foto-tuya.png';
+        const imgVida = './vida.png';
 
         let imgEllaActual = imgEllaCerrada;
-        const player = { x: window.innerWidth / 2 - 45, y: window.innerHeight - 130, w: 90, h: 90 };
+        const player = { x: 0, y: 0, w: 90, h: 90 };
         let items = [];
 
+        function initCanvas() {
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+            canvas.style.width = window.innerWidth + 'px';
+            canvas.style.height = window.innerHeight + 'px';
+            ctx.scale(dpr, dpr);
+            player.x = window.innerWidth / 2 - 45;
+            player.y = window.innerHeight - 140;
+        }
+
+        function actualizarVidas() {
+            const container = document.getElementById('vidas-display');
+            container.innerHTML = '';
+            for(let i=0; i<lives; i++) {
+                const img = document.createElement('img');
+                img.src = imgVida;
+                img.className = 'vida-icon';
+                container.appendChild(img);
+            }
+        }
+
         function iniciarJuego() {
+            initCanvas();
             document.getElementById('pantalla-inicio').style.display = 'none';
+            document.getElementById('ui-superior').style.display = 'flex';
             canvas.style.display = 'block';
-            document.getElementById('ui').style.display = 'block';
+            actualizarVidas();
             gameActive = true;
             spawnItem();
             draw();
@@ -154,8 +200,15 @@
 
         function spawnItem() {
             if (!gameActive) return;
-            items.push({ x: Math.random() * (window.innerWidth - 60), y: -60, w: 60, h: 60, speed: 4 + Math.random() * 2 });
-            setTimeout(spawnItem, 900);
+            items.push({ 
+                x: Math.random() * (window.innerWidth - 60), 
+                y: -60, 
+                w: 60, 
+                h: 60, 
+                speed: 2.5 + Math.random() * 1.5 // MÁS LENTO
+            });
+            // APARECEN MENOS VECES (cada 1.5 segundos aprox)
+            setTimeout(spawnItem, 1500); 
         }
 
         window.addEventListener('touchmove', (e) => {
@@ -166,33 +219,49 @@
         function update() {
             items.forEach((item, index) => {
                 item.y += item.speed;
+
+                // Colisión
                 if (item.x < player.x + player.w && item.x + item.w > player.x && item.y < player.y + player.h && item.y + item.h > player.y) {
                     imgEllaActual = imgEllaAbierta;
-                    setTimeout(() => { imgEllaActual = imgEllaCerrada; }, 200);
+                    setTimeout(() => { imgEllaActual = imgEllaCerrada; }, 250);
                     items.splice(index, 1);
                     score++;
                     document.getElementById('score').innerText = score;
-                    if (score >= 10) winGame();
+                    if (score >= 20) winGame();
                 }
-                if (item.y > window.innerHeight) items.splice(index, 1);
+
+                // Si cae al suelo (Pierde vida)
+                if (item.y > window.innerHeight) {
+                    items.splice(index, 1);
+                    lives--;
+                    actualizarVidas();
+                    if (lives <= 0) gameOver();
+                }
             });
         }
 
         function draw() {
             if (!gameActive) return;
             ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+            
+            // Dibujar jugador
             ctx.drawImage(imgEllaActual, player.x, player.y, player.w, player.h);
+            
+            // Dibujar objetos
             items.forEach(item => ctx.drawImage(imgYo, item.x, item.y, item.w, item.h));
+            
             requestAnimationFrame(() => { update(); draw(); });
         }
 
         function winGame() {
             gameActive = false;
-            canvas.style.display = 'none';
-            document.getElementById('ui').style.display = 'none';
-            document.getElementById('regalo-pantalla').style.display = 'flex';
+            document.getElementById('ganaste-pantalla').style.display = 'flex';
+        }
+
+        function gameOver() {
+            gameActive = false;
+            document.getElementById('perdiste-pantalla').style.display = 'flex';
         }
     </script>
 </body>
 </html>
-
