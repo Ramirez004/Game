@@ -3,41 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Atrapa mi amor ❤️ Animado</title>
+    <title>Atrapa mi amor ❤️</title>
     <style>
+        :root {
+            --rosa-fondo: #ffeff2;
+            --rosa-fuerte: #ff3366;
+            --fucsia: #d81b60;
+        }
+
         body {
             margin: 0;
             padding: 0;
-            background-color: #ffeff2;
-            font-family: 'Arial', sans-serif;
+            background-color: var(--rosa-fondo);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
             touch-action: none;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            height: 100vh;
         }
 
+        /* Pantalla de Inicio */
+        #pantalla-inicio {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #pantalla-inicio h1 {
+            color: var(--fucsia);
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        #pantalla-inicio p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .btn-empezar {
+            background-color: var(--rosa-fuerte);
+            color: white;
+            padding: 18px 50px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn-empezar:active { transform: scale(0.95); }
+
+        /* UI del Juego */
         #ui {
             position: absolute;
             top: 20px;
-            font-size: 24px;
-            color: #d81b60;
+            font-size: 22px;
+            color: var(--fucsia);
             font-weight: bold;
             z-index: 10;
             pointer-events: none;
+            display: none; /* Se muestra al empezar */
         }
 
         canvas {
-            display: block;
-            background: #fff;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            display: none; /* Se muestra al empezar */
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
         }
 
+        /* Pantalla de Regalo */
         #regalo-pantalla {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             z-index: 100;
             flex-direction: column;
             justify-content: center;
@@ -47,8 +98,9 @@
 
         #regalo-pantalla img {
             width: 80%;
+            max-width: 300px;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
 
         .btn-download {
@@ -64,15 +116,22 @@
 </head>
 <body>
 
+    <div id="pantalla-inicio">
+        <div style="font-size: 60px; margin-bottom: 10px;">🎮</div>
+        <h1>¿Lista para jugar?</h1>
+        <p>Atrapa 10 fotos mías para desbloquear tu regalo especial. <br>¡Cuidado, que tengo hambre!</p>
+        <button class="btn-empezar" onclick="iniciarJuego()">EMPEZAR JUEGO</button>
+    </div>
+
     <div id="ui">Atrapados: <span id="score">0</span> / 10</div>
     <canvas id="gameCanvas"></canvas>
 
     <div id="regalo-pantalla">
-        <h1 style="color: #d81b60;">¡Me atrapaste 10 veces! ❤️</h1>
+        <h1 style="color: var(--fucsia);">¡Lo lograste! ❤️</h1>
         <p>Aquí tienes tu regalo especial:</p>
-        <img src="tu-foto-regalo.jpg" id="foto-regalo" alt="Regalo">
+        <img src="./tu-foto-regalo.jpeg" id="foto-regalo" alt="Regalo">
         <br>
-        <a href="tu-foto-regalo.jpg" download="RegaloEspecial.jpg" class="btn-download">Descargar mi Regalo 🎁</a>
+        <a href="./tu-foto-regalo.jpeg" download="RegaloEspecial.jpeg" class="btn-download">Descargar mi Regalo 🎁</a>
     </div>
 
     <script>
@@ -80,49 +139,59 @@
         const ctx = canvas.getContext('2d');
         const scoreElement = document.getElementById('score');
         const regaloPantalla = document.getElementById('regalo-pantalla');
+        const pantallaInicio = document.getElementById('pantalla-inicio');
+        const ui = document.getElementById('ui');
 
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
         let score = 0;
-        let gameActive = true;
+        let gameActive = false;
 
-        // --- CONFIGURACIÓN DE IMÁGENES ---
-        const imgElla = new Image();
-        imgElla.src = 'foto-ella.png'; // FOTO DE ELLA
+        // --- IMÁGENES CON RUTA RELATIVA SEGURA ---
+        const imgEllaCerrada = new Image();
+        imgEllaCerrada.src = './foto-ella-cerrada.png'; 
+
+        const imgEllaAbierta = new Image();
+        imgEllaAbierta.src = './foto-ella-abierta.png'; 
 
         const imgYo = new Image();
-        imgYo.src = 'foto-tuya.png'; // FOTO TUYA QUE CAE
+        imgYo.src = './foto-tuya.png'; 
 
-        // --- NUEVA IMAGEN DE ANIMACIÓN ---
-        const imgAnimacion = new Image();
-        // Sugerencia: Usa un GIF transparente de corazones o una explosión de amor
-        imgAnimacion.src = 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHRkZXZsNWx4Z3R6eXJ6eXJ6eXJ6eXJ6eXJ6eXJ6eXJ6eXJ6eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/j7mX17U0zV9g94q2oO/giphy.gif'; 
+        let imgEllaActual = imgEllaCerrada;
 
         const player = {
-            x: canvas.width / 2 - 40,
-            y: canvas.height - 120,
-            w: 80,
-            h: 80
+            x: canvas.width / 2 - 45,
+            y: canvas.height - 130,
+            w: 90,
+            h: 90
         };
 
         let items = [];
-        // Array para las animaciones temporales
-        let animaciones = []; 
+
+        function iniciarJuego() {
+            pantallaInicio.style.display = 'none';
+            canvas.style.display = 'block';
+            ui.style.display = 'block';
+            gameActive = true;
+            spawnItem();
+            draw();
+        }
 
         function spawnItem() {
             if (!gameActive) return;
             items.push({
-                x: Math.random() * (canvas.width - 50),
-                y: -50,
-                w: 50,
-                h: 50,
-                speed: 3 + Math.random() * 3
+                x: Math.random() * (canvas.width - 60),
+                y: -60,
+                w: 60,
+                h: 60,
+                speed: 4 + Math.random() * 2
             });
-            setTimeout(spawnItem, 1000);
+            setTimeout(spawnItem, 900);
         }
 
         canvas.addEventListener('touchmove', (e) => {
+            if(!gameActive) return;
             const touch = e.touches[0];
             player.x = touch.clientX - player.w / 2;
             if (player.x < 0) player.x = 0;
@@ -131,74 +200,36 @@
 
         function update() {
             if (!gameActive) return;
-
             items.forEach((item, index) => {
                 item.y += item.speed;
-
-                if (item.x < player.x + player.w &&
-                    item.x + item.w > player.x &&
-                    item.y < player.y + player.h &&
-                    item.y + item.h > player.y) {
-                    
-                    // --- CREAR ANIMACIÓN DE "COMIDA" ---
-                    animaciones.push({
-                        x: item.x,
-                        y: item.y,
-                        w: item.w * 1.5, // Un poco más grande
-                        h: item.h * 1.5,
-                        duration: 30 // Duración en frames (aprox 0.5s)
-                    });
-
+                if (item.x < player.x + player.w && item.x + item.w > player.x && item.y < player.y + player.h && item.y + item.h > player.y) {
+                    imgEllaActual = imgEllaAbierta;
+                    setTimeout(() => { imgEllaActual = imgEllaCerrada; }, 250);
                     items.splice(index, 1);
                     score++;
                     scoreElement.innerText = score;
-
-                    if (score >= 10) {
-                        winGame();
-                    }
+                    if (score >= 10) winGame();
                 }
-
-                if (item.y > canvas.height) {
-                    items.splice(index, 1);
-                }
-            });
-
-            // Actualizar animaciones temporales
-            animaciones.forEach((anim, index) => {
-                anim.duration--;
-                if (anim.duration <= 0) {
-                    animaciones.splice(index, 1);
-                }
+                if (item.y > canvas.height) items.splice(index, 1);
             });
         }
 
         function draw() {
+            if (!gameActive) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            ctx.drawImage(imgElla, player.x, player.y, player.w, player.h);
-
+            ctx.drawImage(imgEllaActual, player.x, player.y, player.w, player.h);
             items.forEach(item => {
                 ctx.drawImage(imgYo, item.x, item.y, item.w, item.h);
             });
-
-            // --- DIBUJAR ANIMACIONES DE "COMIDA" ---
-            animaciones.forEach(anim => {
-                ctx.drawImage(imgAnimacion, anim.x, anim.y, anim.w, anim.h);
-            });
-
-            if (gameActive) requestAnimationFrame(() => {
-                update();
-                draw();
-            });
+            requestAnimationFrame(() => { update(); draw(); });
         }
 
         function winGame() {
             gameActive = false;
+            canvas.style.display = 'none';
+            ui.style.display = 'none';
             regaloPantalla.style.display = 'flex';
         }
-
-        spawnItem();
-        draw();
     </script>
 </body>
 </html>
